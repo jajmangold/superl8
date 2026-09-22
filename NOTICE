@@ -1,0 +1,20 @@
+superl8
+=======
+
+W8A8 (INT8) DP4A FlashAttention-2 kernels for NVIDIA Volta (sm_70) / CMP 100-210,
+packaged as a PyTorch custom-op library. BSD-3-Clause, Copyright (c) 2026 superl8 authors.
+
+Attributions
+------------
+
+* Kernel structure and device-helper conventions follow ai-bond/flash-attention-v100
+  (https://github.com/ai-bond/flash-attention-v100). The int8 quantization recipe is
+  informed by (never copied from) SDNQ and SageAttention.
+
+* The 3-bit Lloyd-Max KV-cache quantizer (`superl8/quant/lloydmax.py`, "TQ3") is adapted
+  from qengine (https://github.com/Haru-neo/qengine), Apache License 2.0, Copyright (c)
+  Haru-neo — specifically `src/turboquant.cuh`'s block-L2-norm + fixed-Gaussian
+  Lloyd-Max codebook recipe. superl8 adapts only the scalar quantizer and builds it on
+  top of the KV path's EXISTING Hadamard rotation (`superl8/quant/rotation.py`); qengine's
+  Walsh-Hadamard transform is not reimplemented. Per Apache-2.0 §4 the adaptation
+  carries qengine's attribution in-file. qengine ships no NOTICE file of its own.

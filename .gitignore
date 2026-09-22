@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist*/
+.pytest_cache/
+.ruff_cache/
+
+# Compiled CUDA extension artifacts
+*.so
+*.o
+*.ptx
+*.cubin
+*.ncu-rep
+*.nsys-rep
+*.sqlite
+
+# Local bench/profile outputs (baselines are committed explicitly)
+bench/results/
+profile/results/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Prebuilt external-baseline wheels (rebuild via tools/build_fa_v100_wheel.sh).
+# The wheels stay untracked, but keep the directory itself tracked via a
+# placeholder: docker/Dockerfile COPYs it unconditionally, and a clean checkout
+# must still build (fni8#243).
+docker/wheels/*
+!docker/wheels/.gitkeep
+
+# self-hosted runner secret env
+ci/runner/.env
+
+# stray build logs (do not commit)
+build*.log
+
+# Guard against a stray ledger.json being committed if BUDGET_LEDGER is
+# ever pointed inside the tree.
+ledger.json
+ci/budget/*.json
+
+# Local evolution checkpoints and generated candidates
+tools/openevolve/output/
+evalpool_validation_results.json
+
+# Secrets and environment files
+*.key
+*.pem
+*.cert
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+temp/

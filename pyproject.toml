@@ -1,0 +1,64 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+    "setuptools>=70",
+    "wheel",
+]
+
+[project]
+name = "superl8"
+version = "0.1.0"
+description = "INT8 DP4A FlashAttention-2 and GEMM kernels for NVIDIA Volta GPUs"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: C++",
+    "Programming Language :: CUDA",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    # torch==2.10.0+cu129 from https://download.pytorch.org/whl/cu129 (sm_70 wheel)
+    "torch==2.10.0+cu129",
+    "numpy",
+]
+
+[project.urls]
+Homepage = "https://github.com/superl8/superl8"
+Repository = "https://github.com/superl8/superl8"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-benchmark>=4",
+    "ruff>=0.6",
+    # External fp16 baseline for the correctness/perf harness (sm_70 FA2).
+    "flash_attn_v100",
+    # ggml's own reference (de)quantizers — the oracle the GGUF k-quant/i-quant
+    # kernels are gated against. Without it those tests importorskip,
+    # so the validation lane silently reports "passed" having run none of them.
+    "gguf",
+]
+
+[tool.setuptools]
+packages = ["superl8", "superl8.quant"]
+
+[tool.setuptools.package-data]
+
+[tool.pytest.ini_options]
+markers = [
+    "correctness: numerical correctness vs a reference (fast, always run)",
+    "regression: pinned golden cases for previously-fixed bugs",
+    "perf: latency/throughput gate vs bench/baseline.json (needs a real V100)",
+    "cpu: pure torch/numpy, runs without a CUDA device or superl8._C",
+]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

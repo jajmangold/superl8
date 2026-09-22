@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check superl8/ tests/
+      - run: ruff format --check superl8/ tests/
+
+  build-and-test:
+    runs-on: [self-hosted, sm70]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build CUDA extension
+        run: |
+          pip install torch==2.10.0+cu129 --index-url https://download.pytorch.org/whl/cu129
+          pip install -e ".[dev]" --no-build-isolation
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: pytest tests/ -q --tb=short -x
