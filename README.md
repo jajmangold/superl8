@@ -1,4 +1,4 @@
-# superl8
+# SuperL8
 
 INT8 DP4A FlashAttention-2 and GEMM kernels for NVIDIA Volta GPUs.
 
