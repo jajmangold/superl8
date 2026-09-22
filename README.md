@@ -1,5 +1,7 @@
 # SuperL8
 
+![CI](https://github.com/jajmangold/superl8/actions/workflows/ci.yml/badge.svg)
+
 **DP4A FlashAttention-2 and GEMM for Volta GPUs.**
 
 SuperL8 is a collection of hand-written DP4A FlashAttention-2 and GEMM kernels that exploit a quirk of NVIDIA hardware: on Volta GPUs where tensor cores are disabled or slow, integer `__dp4a` on CUDA cores is **6.7x faster**. If you're running inference on a CMP 100-210, a V100 with disabled tensor cores, or any sm_70 card where fp16 throughput is disappointing — this is the math library that makes it fast.
@@ -120,6 +122,18 @@ Tested on a CMP 100-210 (V100-labelled fleet card):
 | Qwen3.6-27B Q3_K_S | Peak VRAM | 14.3 GiB |
 
 See `bench/qwen3-scoreboard.json` for the full provenance-locked benchmark data.
+
+### Roofline analysis
+
+![Roofline](bench/figures/roofline_cmp100_210.png)
+
+### dp4a vs FP16 tensor cores
+
+![Throughput](bench/figures/tensor_core_dp4a_vs_fp16.png)
+
+## Design
+
+See [docs/DESIGN.md](docs/DESIGN.md) for architecture decisions, quantization strategy, alternatives considered, and performance characteristics.
 
 ## Roadmap
 
