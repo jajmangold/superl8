@@ -1,6 +1,6 @@
 # SuperL8
 
-**The fastest way to run INT8 inference on Volta GPUs.**
+**DP4A FlashAttention-2 and GEMM for Volta GPUs.**
 
 SuperL8 is a collection of hand-written DP4A FlashAttention-2 and GEMM kernels that exploit a quirk of NVIDIA hardware: on Volta GPUs where tensor cores are disabled or slow, integer `__dp4a` on CUDA cores is **6.7x faster**. If you're running inference on a CMP 100-210, a V100 with disabled tensor cores, or any sm_70 card where fp16 throughput is disappointing — this is the math library that makes it fast.
 
