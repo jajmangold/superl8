@@ -26,8 +26,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/superl8/superl8"
-Repository = "https://github.com/superl8/superl8"
+Homepage = "https://github.com/jajmangold/superl8"
+Repository = "https://github.com/jajmangold/superl8"
 
 [project.optional-dependencies]
 dev = [

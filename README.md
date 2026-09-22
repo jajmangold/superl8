@@ -30,11 +30,13 @@ is the only fast INT8 matmul primitive — and int8 also halves K/V cache footpr
 - **`.superl8` weight format** — on-disk bytes are the resident dp4a VRAM layout
   (`mmap + cudaMemcpy`, no dequant or repack).
 
-## Quick start
+## Install
 
 ```bash
-pip install superl8
+pip install https://github.com/jajmangold/superl8/releases/download/v0.1.0/superl8-0.1.0-cp312-cp312-linux_x86_64.whl
 ```
+
+Requires Python 3.12, CUDA 12.9, and a Volta-capable GPU (sm_70).
 
 ```python
 import torch
@@ -52,14 +54,12 @@ out = superl8.attn_int8_fwd(q, k, v, causal=True)
 
 Tested with Qwen, Llama, Gemma, and DeepSeek-family models. Any model with
 standard transformer attention layers works through the generic linear/attention
-APIs. GGUF quantized weights (Q2_K–Q6_K, IQ types) are natively fused.
+APIs. GGUF quantized weights (Q2_K–Q6_K, IQ types) are natively fitted.
 
 ## Build from source
 
-Requires Python 3.12, CUDA 12.9, and a Volta-capable GPU (sm_70).
-
 ```bash
-git clone https://github.com/superl8/superl8.git
+git clone https://github.com/jajmangold/superl8.git
 cd superl8
 pip install -e ".[dev]"
 ```
