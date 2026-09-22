@@ -13,14 +13,81 @@ SuperL8 is a collection of hand-written DP4A FlashAttention-2 and GEMM kernels t
 
 On a CMP 100-210, `__dp4a` is the only fast INT8 matmul primitive. IMMA (INT8 tensor cores) doesn't exist until Turing. SuperL8 builds an entire inference stack on top of this instruction — attention, linear layers, quantization, and a custom weight format designed for zero-copy loading.
 
-## What you get
+## What's implemented
 
-- **W8A8 DP4A FlashAttention-2** — forward, backward (gradient-checked), causal, GQA/MQA, head dims 32/64/128/256, varlen prefill, split-KV decode with int8 KV cache, and cross-attention for diffusion.
-- **W8A8 / W4A8 GEMM** — int8 dp4a linear layers for inference and training, plus grouped GEMM for MoE (every active expert in one launch).
-- **GGUF native-fused kernels** — Q2_K through Q6_K and IQ quant types decoded in-kernel with dp4a (no dequant-to-int8 round-trip).
-- **Hybrid linear attention** — Gated-DeltaNet, Lightning, and MLA (DeepSeek-V2/V3) int8 decode kernels.
-- **Quantization** — symmetric per-row int8, optional Hadamard rotation for outlier-heavy activations, per-channel K-smoothing.
-- **`.superl8` weight format** — on-disk bytes are the resident dp4a VRAM layout (`mmap + cudaMemcpy`, no dequant or repack). Load weights at memory speed.
+### Attention kernels
+
+| Kernel | Direction | Details |
+|---|---|---|
+| `attn_int8_fwd` | Forward | W8A8 DP4A FlashAttention-2. Causal, GQA/MQA, head dims 32/64/128/256. |
+| `attn_w8a8_fwd` | Forward | W8A8 with per-warp quantization. Outlier-aware. |
+| `attn_fp16_fwd` | Forward | FP16 reference path (Volta-native HMMA). |
+| `attn_bwd` | Backward | Gradient-checked backward pass. Full fp16 state. |
+| `attn_decode` | Decode | Split-KV decode with int8 KV cache. 4 variants: fp16 V, int8 V, int4-NF4 V, verify mask. |
+| `attn_paged_decode` | Decode | Paged KV cache decode (k8v3 format). |
+| `attn_paged_decode_k8v3` | Decode | K8V3 paged decode with int4 V. |
+| `attn_varlen_fwd` | Prefill | Variable-length prefill (ragged/non-tile-multiple shapes). |
+| `attn_tree_fwd` | Verify | Tree-structured speculative decode verification. |
+
+### GEMM kernels
+
+| Kernel | Details |
+|---|---|
+| `gemm_dp4a` | W8A8 DP4A GEMM. XOR bank-swizzle. Column-major and row-major. |
+| `gemm_decode_dp4a` | Decode-optimized GEMM (batch=1). |
+| `gemm_grouped_dp4a` | Grouped GEMM for MoE (all active experts in one launch). |
+| `gemm_q4k_dp4a` | Q4_K GGUF decode fused kernel. |
+| `gemm_tq34s_dp4a` | TQ3_4S decode fused kernel. |
+| `gemm_iq{1s,2s,2xs,2xxs,3s,3xxs,4xs}_dp4a` | 7 IQ-type GGUF decode fused kernels. |
+
+### Hybrid linear attention
+
+| Kernel | Model family |
+|---|---|
+| `deltanet_chunk` / `deltanet_decode` | Gated-DeltaNet (Qwen3-Next/3.5/3.6) |
+| `lightning_attn` | Lightning (MiniMax-Text) |
+| `mla_attn` / `mla_attn_fp16` / `mla_attn_int8` | MLA (DeepSeek-V2/V3/V4) |
+
+### Supporting kernels
+
+| Kernel | Purpose |
+|---|---|
+| `quant_rowwise` | Symmetric per-row int8 quantization. |
+| `rmsnorm` | RMSNorm (vec2 half2 vectorized). |
+| `rope` | Rotary position embedding. |
+| `act_and_mul` | SiLU/GELU activation + elementwise multiply. |
+| `causal_conv1d_decode` | Causal conv1d for hybrid architectures. |
+| `gated_rmsnorm_decode` | Gated RMSNorm for DeltaNet. |
+| `dit_block` | Fused DiT transformer block (attention + MLP). |
+| `gather_q3k` | Gather Q for K3 quantization. |
+
+### Quantization
+
+| Component | Details |
+|---|---|
+| Per-row int8 | Symmetric, K-smoothing, Q outlier detection. |
+| V per-channel / per-token | Configurable KV cache quantization. |
+| Hadamard rotation | Incoherence rotation for outlier-heavy activations. |
+| Lloyd-Max 3-bit | Codebook KV quantizer (qengine-adapted). |
+| W3A8 bitplane pack | NF4 codebook, lowbit pack/unpack. |
+| IQ reference dequantizers | IQ1_S, IQ2_S, IQ2_XS, IQ2_XXS, IQ3_S, IQ3_XXS, IQ4_XS. |
+| TQ3_4S reference | TQ3_4S dequantizer. |
+
+### Weight format
+
+| Feature | Details |
+|---|---|
+| `.superl8` container | Shard index, CRC validation, mmap zero-copy load. |
+| GGUF loader | Native-fused Q2_K–Q6_K and IQ types. Requant-i8 fallback. |
+
+### Infrastructure
+
+| Component | Details |
+|---|---|
+| Transport compression | PCIe 1.0 x1 codec (int8/int4/NF4 + Hadamard rotation). |
+| N-gram draft store | Speculative decode chain-tree mask builder. |
+| Autograd | `torch.autograd.Function` for differentiable int8 attention. |
+| CPU fallbacks | Pure-torch implementations for all ops when CUDA unavailable. |
 
 ## Quick start
 
@@ -53,6 +120,18 @@ Tested on a CMP 100-210 (V100-labelled fleet card):
 | Qwen3.6-27B Q3_K_S | Peak VRAM | 14.3 GiB |
 
 See `bench/qwen3-scoreboard.json` for the full provenance-locked benchmark data.
+
+## Roadmap
+
+Performance improvements planned for upcoming releases:
+
+- **O(N) memory-efficient backward** — current backward stores full attention matrices. Tiling to O(1) memory will unlock longer contexts and training on memory-constrained cards.
+- **Multi-token prediction (MTP) verification fusion** — fuse the MTP draft-verify step into a single kernel launch to eliminate the host round-trip.
+- **Paged KV cache v2** — variable block sizes and eviction policies for prefix caching.
+- **W4A8 GEMM decode** — 4-bit weight decode GEMM to halve weight bandwidth vs W8A8.
+- **Compile-time kernel selection** — auto-tune tile sizes and split factors per GPU at install time instead of runtime dispatch.
+- **FP8 fallback path** — for Hopper/Ada cards where FP8 tensor cores exist, provide a fast fallback instead of the INT8 CUDA core path.
+- **Persistent kernel launch** — keep the GPU context alive across calls to eliminate launch overhead on repeated prefill/decode cycles.
 
 ## Build from source
 
