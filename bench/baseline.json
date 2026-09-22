@@ -1,0 +1,296 @@
+{
+  "_schema": {
+    "doc": "Committed perf baselines. Keys: <gpu_class> -> <bench_name> -> {median_ms, tflops?, mem_gbps?, recorded, note}. Only edit in a dedicated 'update baseline' PR (see AGENTS.md).",
+    "gpu_class": "sm_70 == Volta (V100 / CMP 100-210)"
+  },
+  "sm_70": {
+    "hello_add.4Mi.fp16": {
+      "median_ms": 0.0635,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "toolchain smoke op"
+    },
+    "sdpa.b2h16m2048d64.fp16": {
+      "median_ms": 6.017,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "torch SDPA fp16 baseline"
+    },
+    "sdpa.b2h16m2048d64.causal.fp16": {
+      "median_ms": 3.0674,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "torch SDPA fp16 baseline"
+    },
+    "sdpa.b2h16m2048d128.fp16": {
+      "median_ms": 10.4069,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "torch SDPA fp16 baseline"
+    },
+    "sdpa.b2h16m2048d128.causal.fp16": {
+      "median_ms": 5.6658,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "torch SDPA fp16 baseline"
+    },
+    "sdpa.b1h32m4096d64.fp16": {
+      "median_ms": 20.9715,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "torch SDPA fp16 baseline"
+    },
+    "sdpa.b1h32m4096d64.causal.fp16": {
+      "median_ms": 11.1022,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "torch SDPA fp16 baseline"
+    },
+    "flash_v100.b2h16m2048d64.fp16": {
+      "median_ms": 6.2198,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "ai-bond fp16 FA2 baseline"
+    },
+    "flash_v100.b2h16m2048d64.causal.fp16": {
+      "median_ms": 3.6613,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "ai-bond fp16 FA2 baseline"
+    },
+    "flash_v100.b2h16m2048d128.fp16": {
+      "median_ms": 13.1072,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "ai-bond fp16 FA2 baseline"
+    },
+    "flash_v100.b2h16m2048d128.causal.fp16": {
+      "median_ms": 7.4604,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "ai-bond fp16 FA2 baseline"
+    },
+    "flash_v100.b1h32m4096d64.fp16": {
+      "median_ms": 24.1638,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "ai-bond fp16 FA2 baseline"
+    },
+    "flash_v100.b1h32m4096d64.causal.fp16": {
+      "median_ms": 13.0381,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "ai-bond fp16 FA2 baseline"
+    },
+    "attn_int8_fwd.b2h16m2048d64": {
+      "median_ms": 5.4912,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 int8 dp4a QK^T, fp16 PV"
+    },
+    "attn_int8_fwd.b2h16m2048d128": {
+      "median_ms": 11.6045,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 int8 dp4a QK^T, fp16 PV"
+    },
+    "attn_w8a8_fwd.b2h16m2048d64": {
+      "median_ms": 4.354,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 full W8A8 (int8 QK + int8 PV)"
+    },
+    "attn_w8a8_fwd.b2h16m2048d128": {
+      "median_ms": 8.2145,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 full W8A8 (int8 QK + int8 PV)"
+    },
+    "attn_bwd.b2h16m2048d64": {
+      "median_ms": 64.8264,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused fp backward (PR5b-1; dp4a=PR5b-2)"
+    },
+    "attn_bwd.b2h16m2048d128": {
+      "median_ms": 121.2426,
+      "recorded": "2026-07-07",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused fp backward (PR5b-1; dp4a=PR5b-2)"
+    },
+    "gemm_w8a8.m8n4864k896": {
+      "median_ms": 0.081,
+      "recorded": "2026-07-10",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 int8 dp4a GEMM (linear layer); refreshed post-swizzle (#136) \u2014 was 0.1055 pre-swizzle; observed 0.076-0.081ms x5 on idx-4"
+    },
+    "gemm_w8a8.m2048n4864k896": {
+      "median_ms": 0.833,
+      "recorded": "2026-07-10",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 int8 dp4a GEMM (linear layer); refreshed post-swizzle (#136) \u2014 was 1.9763 pre-swizzle (~2.4x faster now); observed 0.739-0.833ms x6 on idx-4"
+    },
+    "gemm_decode_w8a8.m8n1024k4864": {
+      "median_ms": 0.056,
+      "recorded": "2026-07-10",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 int8 dp4a decode GEMM (M=8, down-proj shape); ceiling of 0.052-0.056ms x5 on idx-4"
+    },
+    "gemm_decode_w8a8.m8n4864k896": {
+      "median_ms": 0.056,
+      "recorded": "2026-07-10",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 int8 dp4a decode GEMM (M=8, up-proj shape); ceiling of 0.050-0.056ms x5 on idx-4"
+    },
+    "gemm_decode_w8a8.m16n896k896": {
+      "median_ms": 0.056,
+      "recorded": "2026-07-10",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 int8 dp4a decode GEMM (M=16, small-N shape); ceiling of 0.050-0.055ms x5 on idx-4"
+    },
+    "gemm_grouped_w8a8.e32m64n4864k896": {
+      "median_ms": 2.92,
+      "recorded": "2026-07-10",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 grouped int8 dp4a GEMM (32 experts x m64, MoE FFN up-proj); ceiling of 2.756-2.918ms x5 on idx-4"
+    },
+    "gemm_w4a8.m8n4864k896": {
+      "median_ms": 0.1085,
+      "recorded": "2026-07-08",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 W4A8 dp4a GEMM (4-bit weights, g128)"
+    },
+    "deltanet_chunk_fwd_v2.b2h16t2048d64.fp32": {
+      "median_ms": 58.0547,
+      "recorded": "2026-07-09",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 v2 ungated chunked WY/UT DeltaNet (fp32, C=64, single-block)"
+    },
+    "lightning_attn_fwd.b2h16t2048d64.fp32": {
+      "median_ms": 23.6324,
+      "recorded": "2026-07-11",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 v1 naive sequential fp32 Lightning recurrence (ground truth)"
+    },
+    "lightning_attn_int8_fwd.b2h16t2048d64": {
+      "median_ms": 34.3316,
+      "recorded": "2026-07-11",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 v2 int8 dp4a chunked Lightning \u2014 initial baseline"
+    },
+    "deltanet_gated_chunk_fwd_v3.b2h16t2048d64.fp32": {
+      "median_ms": 55.3692,
+      "recorded": "2026-07-09",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 v3 gated chunked WY/UT DeltaNet with log-space \u03b3-cumprod (fp32, C=64, single-block)"
+    },
+    "deltanet_recurrent_decode.b1h16t1d128.fp32": {
+      "median_ms": 0.2253,
+      "recorded": "2026-07-11",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "warp-per-(head,v-row) register-state CUDA-graph-friendly decode recurrence (fp32); Qwen3.5 per-layer decode shape B=1,H=16,T=1,Dk=Dv=128. Standalone: ~4.7x faster eager and ~10x graphed vs deltanet_recurrent_fwd v1 (16 blocks -> 2048 warps)"
+    },
+    "causal_conv1d_silu_decode.b1w6144k4.fp16": {
+      "median_ms": 0.0594,
+      "recorded": "2026-07-11",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fused causal depthwise conv1d(K=4)+SiLU decode token shift (vLLM causal_conv1d_update analogue); Qwen3.5 merged-qkv width Wc=6144, B=1. One launch (thread-per-channel, fp32 math / fp16 store, no smem -> CUDA-graph-capturable) replaces the eager cat/conv1d/slice/silu swarm"
+    },
+    "gated_rmsnorm_decode.b1nv16vd128.fp32": {
+      "median_ms": 0.0584,
+      "recorded": "2026-07-11",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fused gated output RMSNorm decode (HF Qwen3_5RMSNormGated, norm-before-gate): per-head RMS over vd + gain + silu(z) in one warp-per-(head)-row register-state launch (no smem -> CUDA-graph-capturable, fp32 load-bearing). Qwen3.5 decode shape B=1,nv=16,vd=128. Replaces ~6 eager fp32 reduce/rsqrt/mul/silu ops"
+    },
+    "gemm_q4k.m1n4096k3072": {
+      "median_ms": 0.4106,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q4K dp4a GEMM (native)"
+    },
+    "gemm_q4k.m2048n4096k3072": {
+      "median_ms": 6.0022,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q4K dp4a GEMM (native)"
+    },
+    "gemm_q5k.m1n4096k3072": {
+      "median_ms": 0.4229,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q5K dp4a GEMM (native)"
+    },
+    "gemm_q5k.m2048n4096k3072": {
+      "median_ms": 7.0989,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q5K dp4a GEMM (native)"
+    },
+    "gemm_q6k.m1n4096k3072": {
+      "median_ms": 0.4014,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q6K dp4a GEMM (native)"
+    },
+    "gemm_q6k.m2048n4096k3072": {
+      "median_ms": 6.7968,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q6K dp4a GEMM (native)"
+    },
+    "gemm_decode_q4k.m1n4096k3072": {
+      "median_ms": 0.0573,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q4K MMVQ decode (M=1)"
+    },
+    "gemm_decode_q5k.m1n4096k3072": {
+      "median_ms": 0.0553,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q5K MMVQ decode (M=1)"
+    },
+    "gemm_decode_q6k.m1n4096k3072": {
+      "median_ms": 0.0584,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q6K MMVQ decode (M=1)"
+    },
+    "gemm_q3k.m1n4096k3072": {
+      "median_ms": 0.3574,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q3K dp4a GEMM (native)"
+    },
+    "gemm_q3k.m2048n4096k3072": {
+      "median_ms": 6.4701,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q3K dp4a GEMM (native)"
+    },
+    "gemm_q2k.m1n4096k3072": {
+      "median_ms": 0.4352,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q2K dp4a GEMM (native)"
+    },
+    "gemm_q2k.m2048n4096k3072": {
+      "median_ms": 7.5075,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q2K dp4a GEMM (native)"
+    },
+    "gemm_decode_q3k.m1n4096k3072": {
+      "median_ms": 0.0543,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q3K MMVQ decode (M=1)"
+    },
+    "gemm_decode_q2k.m1n4096k3072": {
+      "median_ms": 0.0543,
+      "recorded": "2026-07-14",
+      "device": "Tesla V100-PCIE-12GB",
+      "note": "fni8 fused GGUF Q2K MMVQ decode (M=1)"
+    }
+  }
+}

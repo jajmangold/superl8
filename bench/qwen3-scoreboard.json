@@ -1,0 +1,86 @@
+{
+  "issue": "fni8#299",
+  "status": "provenance-locked",
+  "rows": [
+    {
+      "name": "fni8-qwen36-q3ks-local-v100",
+      "status": "local-provenance",
+      "model": "Qwen3.6-27B-Q3_K_S",
+      "steady_decode_tok_s": 21.3,
+      "end_to_end_tok_s": 7.2,
+      "prompt_tokens": 256,
+      "new_tokens": 128,
+      "hardware": "GPU 11, V100-labelled CMP 100-210 fleet card",
+      "cuda_graph": true,
+      "speculative_decode": false,
+      "peak_vram_gb": 14.33,
+      "fni8_commit": "374fb26ee76067e14642e6fe6af306723f6f538f",
+      "fni8_serve_commit": "16dc03ea3a1c94a72c75f93002adff3609615dc3",
+      "source": "worktrees/fni8-serve-353-sampler-controls/bench/Qwen3.6-27B-Q3_K_S.gguf.json",
+      "reproducible": "artifact-settings-locked; checkpoint currently absent"
+    },
+    {
+      "name": "baseline-reference-45.8",
+      "status": "unproven-reference",
+      "model": "Qwen3.6-27B-MTP-TQ3_4S",
+      "tok_s": 45.8,
+      "source": "qwen38-tq3/llama.cpp-tq3/artifacts/perf_m3/results_retry.md",
+      "hardware": null,
+      "reproducible": false
+    },
+    {
+      "name": "mtp-probe-3090",
+      "status": "external-hardware",
+      "model": "Qwen3.6-27B-MTP-TQ3_4S",
+      "tok_s": 47.21,
+      "hardware": "RTX 3090 24GB",
+      "source": "qwen38-tq3/llama.cpp-tq3/artifacts/perf_p0_baseline_3090/production_server_probes_20260610.md",
+      "reproducible": false
+    },
+    {
+      "name": "mtp-probe-3090-pp2210",
+      "status": "external-hardware",
+      "model": "Qwen3.6-27B-MTP-TQ3_4S",
+      "tok_s": 53.17,
+      "hardware": "RTX 3090 24GB",
+      "source": "qwen38-tq3/llama.cpp-tq3/artifacts/perf_p0_baseline_3090/production_server_probes_20260610.md",
+      "reproducible": false
+    },
+    {
+      "name": "mtp-retry-local-artifact",
+      "status": "local-incomplete-provenance",
+      "model": "Qwen3.6-27B-MTP-TQ3_4S",
+      "tok_s": 38.64,
+      "runs_tok_s": [38.76, 38.69, 38.47],
+      "drafts": 280,
+      "accepted": 259,
+      "source": "qwen38-tq3/llama.cpp-tq3/artifacts/perf_m3/results_retry.md",
+      "reproducible": false
+    },
+    {
+      "name": "fni8-qwen38-k8v8-exact2k",
+      "status": "local-control",
+      "model": "Qwen3.8-27B-TQ3_4S",
+      "prompt_tok_s": 128.3,
+      "decode_tok_s": 7.76,
+      "kv": "K8V8",
+      "context": 2048,
+      "source": "WORKSTREAMS.md; fni8-serve#412/#295",
+      "reproducible": "evidence-recorded"
+    },
+    {
+      "name": "fni8-qwen38-k8v8-fresh-v100",
+      "status": "local-control",
+      "model": "Qwen3.8-27B-MTP-TQ3_4S",
+      "prompt_tokens": 512,
+      "decode_tok_s": 7.36,
+      "prompt_tok_s": 127.1,
+      "kv": "K8V8",
+      "chunked_prefill": 256,
+      "cuda_graph": false,
+      "hardware": "GPU 14, V100-labelled CMP 100-210 fleet card",
+      "source": "2026-08-15 docker fni8-final-qual /workspace/bench/qual_qwen38_tq34s.py",
+      "reproducible": "command-captured"
+    }
+  ]
+}
